@@ -48,9 +48,10 @@ class PayrollDate {
 
 	public function result(){
 		date_default_timezone_set('UTC');
-		//assign year
-		$yearval = getopt("p:"); //enter on cli
-		var_dump($yearval);
+		
+		$yearval = getopt(null, ["year:"]);
+	
+		//var_dump($yearval);
 		if (!empty($yearval)) {
 		$year = $yearval[p] ;
 		}else{
@@ -74,18 +75,13 @@ class PayrollDate {
 		}
 		
 		$fp = fopen('payroll_'.$year.'.csv', 'w');
-        foreach ($csvdata as $fields) {
-            fputcsv($fp, $fields);
-        }
+		foreach ($csvdata as $fields) {
+		    fputcsv($fp, $fields);
+		}
 
-        fclose($fp);
-        
-        echo "Saved to $file successfully!";
-	
-		die();
-		echo "Saved to $filename successfully!";
+		fclose($fp);
+		 echo "Saved to $filename successfully!";
 	}
-
 }
 
 $payroll = new PayrollDate();
