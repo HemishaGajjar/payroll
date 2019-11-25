@@ -1,0 +1,93 @@
+<?php
+class PayrollDate {
+
+	public $first_day_this_month;
+	public $last_day_this_month;
+	public $fifteen_day_this_month;
+
+
+	function firstDayOftheMonth($month,$year){
+		$date = new DateTime(date($year).'-'.$month.'-01');
+		$date->modify('first day of this month');
+		$first_day_this_month = $date->format('Y-m-d');
+		if ((new DateTime($first_day_this_month))->format("N") > 5) {
+			$date->modify('next monday');
+			return $date->format('Y-m-d');
+		}else{ 
+			return $first_day_this_month;
+		}
+	}
+
+	function lastDayOfTheMonth($month,$year){
+		$date = new DateTime(date($year).'-'.$month.'-01');
+		$date->modify('last day of this month');
+		$date->modify('+1 day');
+		$date->modify('last weekday');
+		return $last_day_this_month = $date->format('Y-m-d');
+	}
+
+	function fifteenDayOftheMonth($month,$year){
+		$date = new DateTime(date($year).'-'.$month.'-15');
+		$fifteen_day_this_month = $date->format('Y-m-d');
+		if ((new DateTime($fifteen_day_this_month))->format("N") > 5) {
+			$date->modify('next monday');
+			return $date->format('Y-m-d');
+		}else{ 
+			return $fifteen_day_this_month;
+		}
+	}
+
+	/**
+
+	*
+	* @param array     $data       The table you want to export in CSV
+	* @param string    $filename   The name of the file you want to export
+	* @param string    $delimiter  The CSV delimiter you wish to use. The default ";" is used for a compatibility with microsoft excel
+	* @param string    $enclosure  The type of enclosure used in the CSV file, by default it will be a quote "
+	*/
+
+	public function result(){
+		date_default_timezone_set('UTC');
+		//assign year
+		$yearval = getopt("p:"); //enter on cli
+		var_dump($yearval);
+		if (!empty($yearval)) {
+		$year = $yearval[p] ;
+		}else{
+		$year = date("Y") ;
+		}
+
+		$months = 12;
+		$filename = 'payroll_'.$year.'.csv';
+				
+		$csvdataVal = array();
+		$csvdata[] = ['Month Name', '1st Expenses Day', '2nd Expenses Day', 'Salary Day'];
+		
+		echo "Month Name, 1st Expenses Day, 2nd Expenses Day, Salary Day\n";
+		for($month=1; $month <= $months; $month++){
+			echo  date('F', mktime(1, 1, 1, $month, 1, date($year))).', '.$this->firstDayOftheMonth($month,$year).', '.$this->fifteenDayOftheMonth($month,$year).', '.$this->lastDayOfTheMonth($month,$year)."\n" ;
+			$csvdataVal['Month Name'] = date('F', mktime(1, 1, 1, $month, 1, date($year)));
+			$csvdataVal['1st Expenses Day'] = $this->firstDayOftheMonth($month,$year) ;
+			$csvdataVal['2nd Expenses Day'] = $this->fifteenDayOftheMonth($month,$year);
+			$csvdataVal['Salary Day'] = $this->lastDayOfTheMonth($month,$year);
+			$csvdata[]  = $csvdataVal;
+		}
+		
+		$fp = fopen('payroll_'.$year.'.csv', 'w');
+        foreach ($csvdata as $fields) {
+            fputcsv($fp, $fields);
+        }
+
+        fclose($fp);
+        
+        echo "Saved to $file successfully!";
+	
+		die();
+		echo "Saved to $filename successfully!";
+	}
+
+}
+
+$payroll = new PayrollDate();
+$payroll->result();
+?>
